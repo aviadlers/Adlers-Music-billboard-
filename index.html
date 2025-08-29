@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Billboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+      color: white;
+      text-align: center;
+    }
+    header {
+      padding: 20px;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 0 0 10px #FFD700, 0 0 20px #FF8C00;
+    }
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .track {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+      transition: transform 0.3s;
+    }
+    .track:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    .track img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+    }
+    .info {
+      flex: 1;
+      text-align: left;
+    }
+    .info h3 {
+      margin: 0;
+      font-size: 1.2em;
+    }
+    .info p {
+      margin: 3px 0;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+    button {
+      background: #FFD700;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #FF8C00;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>🎶 Music Billboard</header>
+  <div class="track-list">
+    <div class="track">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6zLZ0AAAAASUVORK5CYII=" alt="Album Art">
+      <div class="info">
+        <h3>Song One</h3>
+        <p>Artist A</p>
+        <audio controls src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAwEAAAMUAAACcQAA"></audio>
+      </div>
+      <button onclick="like(this)">👍 <span>0</span></button>
+    </div>
+    <div class="track">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6zLZ0AAAAASUVORK5CYII=" alt="Album Art">
+      <div class="info">
+        <h3>Song Two</h3>
+        <p>Artist B</p>
+        <audio controls src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAwEAAAMUAAACcQAA"></audio>
+      </div>
+      <button onclick="like(this)">👍 <span>0</span></button>
+    </div>
+    <div class="track">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6zLZ0AAAAASUVORK5CYII=" alt="Album Art">
+      <div class="info">
+        <h3>Song Three</h3>
+        <p>Artist C</p>
+        <audio controls src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAwEAAAMUAAACcQAA"></audio>
+      </div>
+      <button onclick="like(this)">👍 <span>0</span></button>
+    </div>
+  </div>
+  <script>
+    function like(btn) {
+      let span = btn.querySelector('span');
+      span.textContent = parseInt(span.textContent) + 1;
+    }
+  </script>
+</body>
+</html>
