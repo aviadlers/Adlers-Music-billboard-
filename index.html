@@ -1,116 +1,318 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Billboard</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-      color: white;
-      text-align: center;
-    }
-    header {
-      padding: 20px;
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #FFD700;
-      text-shadow: 0 0 10px #FFD700, 0 0 20px #FF8C00;
-    }
-    .track-list {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      padding: 20px;
-    }
-    .track {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 15px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-      transition: transform 0.3s;
-    }
-    .track:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-    }
-    .track img {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-    }
-    .info {
-      flex: 1;
-      text-align: left;
-    }
-    .info h3 {
-      margin: 0;
-      font-size: 1.2em;
-    }
-    .info p {
-      margin: 3px 0;
-      font-size: 0.9em;
-      color: #ccc;
-    }
-    button {
-      background: #FFD700;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #FF8C00;
-      color: #fff;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Music Billboard — Live Demo</title>
+
+<!-- INLINE STYLES -->
+<style>
+  :root{
+    --bg1:#07070a; --bg2:#121217; --accent:#FFD700; --muted:#9aa0a6;
+    --card:#151518; --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(120deg,var(--bg1),#0f0f14 60%,var(--bg2));
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* Hero */
+  header.hero{
+    padding:40px 20px;
+    text-align:center;
+    background: linear-gradient(90deg, rgba(255,215,0,0.03), rgba(255,140,0,0.02));
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  header.hero h1{
+    font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+    margin:0;
+    letter-spacing: -0.02em;
+    color:var(--accent);
+    text-shadow:0 6px 30px rgba(255,183,0,0.05);
+    display:inline-block;
+    padding: 6px 10px;
+  }
+  header.hero p{color:var(--muted); margin-top:8px; font-size:0.95rem}
+
+  /* Main layout */
+  main{flex:1; padding:28px 18px; max-width:1100px; margin:0 auto; width:100%;}
+  .billboard{
+    display:grid;
+    grid-template-columns: 1fr 380px;
+    gap:20px;
+    align-items:start;
+  }
+
+  /* Left: tracks */
+  .tracks{
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .track-card{
+    display:flex; gap:14px; align-items:center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px; padding:12px 14px;
+    border:1px solid rgba(255,255,255,0.03);
+    transition: transform .28s cubic-bezier(.2,.9,.3,1), box-shadow .28s;
+  }
+  .track-card:hover{ transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
+  .art{ width:84px; height:84px; border-radius:8px; overflow:hidden; flex-shrink:0; box-shadow:0 8px 20px rgba(0,0,0,0.5);}
+  .art img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .meta{ flex:1; text-align:left; }
+  .meta h3{ margin:0; font-size:1.05rem; }
+  .meta p{ margin:6px 0 0 0; color:var(--muted); font-size:0.9rem }
+
+  .controls{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:110px }
+  .rank{
+    font-weight:700; font-size:1.05rem; color:var(--accent); background:rgba(255,215,0,0.06);
+    padding:6px 8px; border-radius:8px; display:inline-block;
+    box-shadow: 0 6px 18px rgba(255,183,0,0.03);
+  }
+  .actions{ display:flex; gap:8px; align-items:center; }
+  .btn{
+    background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:6px 10px;
+    border-radius:10px; cursor:pointer; font-weight:600;
+  }
+  .btn.play{ background: linear-gradient(90deg,var(--accent),#ff8c00); color:#111; border:none; }
+  .likes{ display:flex; gap:6px; align-items:center; color:var(--muted); font-weight:600; }
+
+  /* Right column: top stats/artists */
+  .side{
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.03);
+  }
+  .side h4{ margin:0 0 10px 0; color:var(--accent); }
+  .top3{ display:flex; gap:10px; flex-direction:column; }
+  .mini{ display:flex; gap:10px; align-items:center; }
+  .mini img{ width:48px; height:48px; border-radius:8px; object-fit:cover }
+
+  /* sticky player */
+  .playerbar{
+    position:fixed; left:0; right:0; bottom:0; height:72px; display:flex; align-items:center;
+    gap:18px; padding:10px 18px; background: linear-gradient(180deg, rgba(10,10,12,0.9), rgba(0,0,0,0.85));
+    border-top:1px solid rgba(255,255,255,0.03); z-index:999;
+  }
+  .playerbar .now{ display:flex; gap:12px; align-items:center; min-width:220px; }
+  .playerbar img{ width:54px; height:54px; border-radius:8px; object-fit:cover }
+  .playerbar .title{ font-weight:700; font-size:0.98rem }
+  .playerbar .artist{ color:var(--muted); font-size:0.85rem }
+
+  .player-controls{ display:flex; gap:12px; align-items:center; margin-left:6px; }
+  .pcbtn{ background:transparent; border:1px solid rgba(255,255,255,0.06); padding:8px 14px; border-radius:10px; cursor:pointer; color:#fff; font-weight:700 }
+  .pcbtn.big{ padding:10px 14px; font-size:1.1rem; background:linear-gradient(90deg,var(--accent),#ff8c00); color:#111; border:none; }
+
+  /* footer */
+  footer{ padding:22px; text-align:center; color:var(--muted); font-size:0.9rem; margin-top:18px; }
+
+  /* responsive */
+  @media(max-width:980px){
+    .billboard{ grid-template-columns: 1fr; }
+    .controls{ align-items:flex-start; }
+    .playerbar{ padding:12px; }
+  }
+</style>
 </head>
 <body>
-  <header>🎶 Music Billboard</header>
-  <div class="track-list">
-    <div class="track">
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6zLZ0AAAAASUVORK5CYII=" alt="Album Art">
-      <div class="info">
-        <h3>Song One</h3>
-        <p>Artist A</p>
-        <audio controls src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAwEAAAMUAAACcQAA"></audio>
+
+<header class="hero">
+  <div>
+    <h1>🎶 Music Billboard — Top Hits of the Week</h1>
+    <p style="margin-top:8px;color:var(--muted)">Live demo • Vote locally • Sticky player • Looks great on mobile</p>
+  </div>
+</header>
+
+<main>
+  <div class="billboard">
+    <!-- Left column: tracks -->
+    <section class="tracks" id="tracksRoot">
+      <!-- Cards inserted by JS -->
+    </section>
+
+    <!-- Right column: quick stats -->
+    <aside class="side">
+      <h4>Top 3 Spotlight</h4>
+      <div class="top3" id="top3">
+        <!-- mini items -->
       </div>
-      <button onclick="like(this)">👍 <span>0</span></button>
-    </div>
-    <div class="track">
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6zLZ0AAAAASUVORK5CYII=" alt="Album Art">
-      <div class="info">
-        <h3>Song Two</h3>
-        <p>Artist B</p>
-        <audio controls src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAwEAAAMUAAACcQAA"></audio>
+
+      <hr style="margin:12px 0; border-color: rgba(255,255,255,0.03)">
+
+      <h4>Share</h4>
+      <div style="display:flex;gap:12px;">
+        <a class="btn" href="#" onclick="openSocial('https://www.tiktok.com')">TikTok</a>
+        <a class="btn" href="#" onclick="openSocial('https://www.youtube.com')">YouTube</a>
+        <a class="btn" href="#" onclick="openSocial('https://www.instagram.com')">Instagram</a>
       </div>
-      <button onclick="like(this)">👍 <span>0</span></button>
-    </div>
-    <div class="track">
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6zLZ0AAAAASUVORK5CYII=" alt="Album Art">
-      <div class="info">
-        <h3>Song Three</h3>
-        <p>Artist C</p>
-        <audio controls src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAwEAAAMUAAACcQAA"></audio>
-      </div>
-      <button onclick="like(this)">👍 <span>0</span></button>
+    </aside>
+  </div>
+</main>
+
+<!-- Sticky player -->
+<div class="playerbar" role="region" aria-label="Player">
+  <div class="now">
+    <img id="playerArt" src="" alt="Now playing">
+    <div>
+      <div class="title" id="playerTitle">Nothing playing</div>
+      <div class="artist" id="playerArtist">—</div>
     </div>
   </div>
-  <script>
-    function like(btn) {
-      let span = btn.querySelector('span');
-      span.textContent = parseInt(span.textContent) + 1;
-    }
-  </script>
+
+  <div class="player-controls">
+    <button class="pcbtn" id="prevBtn">⏮</button>
+    <button class="pcbtn big" id="playBtn">▶</button>
+    <button class="pcbtn" id="nextBtn">⏭</button>
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+</div>
+
+<footer>Made with ❤️ — preview only. Deploy to GitHub Pages or Firebase to publish.</footer>
+
+<!-- INLINE SCRIPT: tracks data + interactivity (all local; likes saved in localStorage) -->
+<script>
+/* -------------------------
+  Small base64 assets (tiny placeholders)
+   - small PNG & tiny silent MP3 (keeps file size tiny)
+   Replace these base64 strings with real assets later if desired.
+------------------------- */
+const placeholderImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6zLZ0AAAAASUVORK5CYII=";
+const tinyMp3 = "data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAwEAAAMUAAACcQAA";
+
+/* -------------------------
+  Track list (dummy)
+------------------------- */
+const TRACKS = [
+  { id: "t1", title: "Midnight Drive", artist: "Nova Echo", art: placeholderImg, audio: tinyMp3 },
+  { id: "t2", title: "Golden Hour", artist: "Luna Skies", art: placeholderImg, audio: tinyMp3 },
+  { id: "t3", title: "Neon Tales", artist: "Pulse City", art: placeholderImg, audio: tinyMp3 },
+  { id: "t4", title: "Skyline Dreams", artist: "The Rovers", art: placeholderImg, audio: tinyMp3 },
+  { id: "t5", title: "Echoes", artist: "Velvet Night", art: placeholderImg, audio: tinyMp3 }
+];
+
+/* -------------------------
+  Utilities: local likes
+------------------------- */
+function getLikes(id){
+  try { return Number(localStorage.getItem("likes_"+id) || 0); } catch(e){ return 0; }
+}
+function setLikes(id, v){ try { localStorage.setItem("likes_"+id, String(v)); } catch(e){} }
+
+/* -------------------------
+  Render tracks to page
+------------------------- */
+const tracksRoot = document.getElementById("tracksRoot");
+function renderTracks(){
+  // Sort by likes desc then id
+  const copy = TRACKS.slice().sort((a,b)=> getLikes(b.id) - getLikes(a.id));
+  tracksRoot.innerHTML = "";
+  copy.forEach((t, idx) => {
+    const div = document.createElement("div");
+    div.className = "track-card";
+    div.innerHTML = `
+      <div class="art"><img src="${t.art}" alt="${t.title}"></div>
+      <div class="meta">
+        <h3>${t.title}</h3>
+        <p>${t.artist}</p>
+      </div>
+      <div class="controls">
+        <div class="rank">#${idx+1}</div>
+        <div class="actions">
+          <button class="btn play" data-id="${t.id}">Play</button>
+        </div>
+        <div class="likes">
+          <button class="btn btn-like" data-id="${t.id}">⭐</button>
+          <div style="width:6px"></div>
+          <div style="font-weight:700;color:var(--accent)">${getLikes(t.id)}</div>
+        </div>
+      </div>
+    `;
+    // play button handler
+    div.querySelector(".play").addEventListener("click", ()=> playTrackById(t.id));
+    // like handler
+    div.querySelector(".btn-like").addEventListener("click", (e)=>{
+      const id = e.currentTarget.dataset.id;
+      const newL = getLikes(id)+1;
+      setLikes(id, newL);
+      // small animation
+      e.currentTarget.animate([{transform:"scale(1)"},{transform:"scale(1.15)"},{transform:"scale(1)"}],{duration:220});
+      // re-render so order updates
+      renderTracks();
+      renderTop3();
+    });
+    tracksRoot.appendChild(div);
+  });
+}
+
+/* -------------------------
+  Top 3 sidebar
+------------------------- */
+function renderTop3(){
+  const topRoot = document.getElementById("top3");
+  const copy = TRACKS.slice().sort((a,b)=> getLikes(b.id) - getLikes(a.id)).slice(0,3);
+  topRoot.innerHTML = "";
+  copy.forEach((t,i)=>{
+    const d = document.createElement("div");
+    d.className = "mini";
+    d.innerHTML = `<img src="${t.art}" alt=""><div style="text-align:left"><strong style="color:var(--accent)">#${i+1}</strong> <div style="font-weight:700">${t.title}</div><div style="color:var(--muted);font-size:0.85rem">${t.artist}</div></div>`;
+    topRoot.appendChild(d);
+  });
+}
+
+/* -------------------------
+  Player logic
+------------------------- */
+const audio = document.getElementById("audio");
+const playerArt = document.getElementById("playerArt");
+const playerTitle = document.getElementById("playerTitle");
+const playerArtist = document.getElementById("playerArtist");
+const playBtn = document.getElementById("playBtn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+let currentIndex = 0;
+function loadTrackByIndex(i){
+  currentIndex = (i + TRACKS.length) % TRACKS.length;
+  const t = TRACKS[currentIndex];
+  audio.src = t.audio;
+  playerArt.src = t.art;
+  playerTitle.textContent = t.title;
+  playerArtist.textContent = t.artist;
+}
+function playTrackById(id){
+  const idx = TRACKS.findIndex(x=>x.id===id);
+  if(idx>=0){ loadTrackByIndex(idx); audio.play(); playBtn.textContent = "⏸"; }
+}
+playBtn.addEventListener("click", ()=>{
+  if(audio.paused){ audio.play(); playBtn.textContent="⏸"; }
+  else { audio.pause(); playBtn.textContent="▶"; }
+});
+prevBtn.addEventListener("click", ()=> { loadTrackByIndex(currentIndex-1); audio.play(); playBtn.textContent="⏸"; });
+nextBtn.addEventListener("click", ()=> { loadTrackByIndex(currentIndex+1); audio.play(); playBtn.textContent="⏸"; });
+
+audio.addEventListener("ended", ()=> { loadTrackByIndex(currentIndex+1); audio.play(); });
+
+/* -------------------------
+  Social helper
+------------------------- */
+function openSocial(url){
+  window.open(url, "_blank");
+}
+
+/* -------------------------
+  Init render
+------------------------- */
+renderTracks();
+renderTop3();
+loadTrackByIndex(0);
+</script>
+
 </body>
 </html>
